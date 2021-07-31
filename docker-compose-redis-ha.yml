@@ -1,0 +1,110 @@
+﻿version: '3.9'
+services:
+
+  redis-master:
+    image: bitnami/redis:6.2
+    restart: on-failure
+    environment:
+      REDIS_REPLICATION_MODE: master
+      REDIS_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+    volumes:
+      - redis-master-data:/bitnami/redis/data
+
+  redis-slave-1:
+    image: bitnami/redis:6.2
+    restart: on-failure
+    environment:
+      REDIS_REPLICATION_MODE: slave
+      REDIS_MASTER_HOST: redis-master
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+    volumes:
+      - redis-slave-1-data:/bitnami/redis/data
+    depends_on:
+      - redis-master
+
+  redis-slave-2:
+    image: bitnami/redis:6.2
+    restart: on-failure
+    environment:
+      REDIS_REPLICATION_MODE: slave
+      REDIS_MASTER_HOST: redis-master
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+    volumes:
+      - redis-slave-2-data:/bitnami/redis/data
+    depends_on:
+      - redis-master
+
+  redis-sentinel-1:
+    image: bitnami/redis-sentinel:6.2
+    restart: on-failure
+    environment:
+      REDIS_MASTER_SET: masterset
+      REDIS_MASTER_HOST: redis-master
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 5000
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_QUORUM: 2
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
+
+  redis-sentinel-2:
+    image: bitnami/redis-sentinel:6.2
+    restart: on-failure
+    environment:
+      REDIS_MASTER_SET: masterset
+      REDIS_MASTER_HOST: redis-master
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 5000
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_QUORUM: 2
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
+
+  redis-sentinel-3:
+    image: bitnami/redis-sentinel:6.2
+    restart: on-failure
+    environment:
+      REDIS_MASTER_SET: masterset
+      REDIS_MASTER_HOST: redis-master
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_PASSWORD: rUcPHjYX5V9HRbZBTP64K7CfnfTFamjW
+      REDIS_SENTINEL_DISABLE_COMMANDS: FLUSHDB,FLUSHALL
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 5000
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 5000
+      REDIS_SENTINEL_QUORUM: 2
+    depends_on:
+      - redis-master
+      - redis-slave-1
+      - redis-slave-2
+
+volumes:
+  redis-master-data:
+    driver: local
+    labels:
+      service: redis
+  redis-slave-1-data:
+    driver: local
+    labels:
+      service: redis
+  redis-slave-2-data:
+    driver: local
+    labels:
+      service: redis
