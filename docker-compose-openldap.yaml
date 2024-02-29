@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  openldap:
+    build: openldap
+    ports:
+      - "389:389"
+      - "636:636"
